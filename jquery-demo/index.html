@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="./css/styles.css">
+  <title>Document</title>
+</head>
+
+<body>
+  <!-- @begin:component - App -->
+  <div class="container">
+    <h1>SuperHero Finder</h1>
+
+    <!-- @begin:component - Search -->
+    <form class="Search form-inline">
+      <label class="sr-only">Name</label>
+      <input type="text" class="Search-input form-control mb-2 mr-sm-2" placeholder="Ex: Captain America">
+      <button type="submit" class="btn btn-primary mb-2">Submit</button>
+    </form>    
+    <!-- @end:component - Search -->
+    
+    <!-- @begin:component - ListResults -->
+    <ul class="ListResults">
+      <!-- component - ListItem -->
+      <!-- component - ListItem -->
+      <!-- ... -->
+      <!-- component - ListItem -->
+    </ul>
+    <!-- @end:component - ListResults -->
+
+  </div>
+  <!-- @end:component - App -->
+
+  <!-- @begin:component - ListItem -->
+  <script>
+    const templateListItem = result => `
+    <li class="ListItem">
+      <div class="card">
+        <img class="card-img-top" src="${result.thumbnail.path}.${
+        result.thumbnail.extension
+      }" alt="Card image cap">
+        <div class="card-body">
+          <h5 class="card-title">${result.name}</h5>
+          <p class="card-text">${result.description}</p>
+        </div>
+      </div>
+    </li>
+`
+  </script>
+  <!-- @end:component - ListItem -->
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+  <script type="module">
+
+    import * as ServiceApiMarvel from "./js/services/serviceApiMarvel.js"
+
+    $('.Search').on('submit', function(event) {
+      event.preventDefault()
+      const query = $(this).find('input').val()
+      ServiceApiMarvel.searchSuperHero(query).then(results => {
+        const contentListResults = results.map( templateListItem ).join('')
+        $('.ListResults').html(contentListResults)
+      })
+    })
+    
+  </script>
+
+</body>
+
+</html>
