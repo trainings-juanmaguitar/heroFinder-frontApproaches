@@ -72,10 +72,12 @@ export const searchSuperHero = query => {
 
 Es una buena idea guardar la PUBLIC_KEY (y otras claves en general) en un archivo apart. Asi podemos crear un archivo `config.js` donde dejar escrita nuestra PUBLIC_KEY y añadir este archivo al `.gitignore` para que no suba al repositorio
 
+```
 ├── js
 │   ├── config.js
 │   └── services
 │       └── serviceApiMarvel.js
+```
 
 Por lo demás, el método `searchSuperHero` toma una query, genera una URL con ella, hace una request a esa URL y maneja la respuesta (en forma de promise) a traves de `.then` para devolverla lista para su uso directo
 
