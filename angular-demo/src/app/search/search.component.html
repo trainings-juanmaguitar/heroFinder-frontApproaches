@@ -1,0 +1,11 @@
+<form class="Search form-inline" (submit)="submitSearch($event)">
+  <label class="sr-only">Name</label>
+  <input
+    type="text"
+    class="Search-input form-control mb-2 mr-sm-2"
+    placeholder="Ex: Captain America"
+    [(ngModel)]="query"
+    name="query field"
+  />
+  <button type="submit" class="btn btn-primary mb-2">Submit</button>
+</form>
