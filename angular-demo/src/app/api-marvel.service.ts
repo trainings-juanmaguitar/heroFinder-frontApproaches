@@ -2,8 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-
 
 import { PUBLIC_KEY } from '../config.js'
 const BASE_URL_API = "https://gateway.marvel.com/v1/public/"

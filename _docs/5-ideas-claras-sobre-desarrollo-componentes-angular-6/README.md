@@ -25,217 +25,225 @@ Puesto que la configuración de elementos en angular requiere de un poco más de
 - Para crear un servicio → `ng g service my-new-service`
 - Para crear un modulo → `ng g module my-module`
 
-## 2.- La estructura de un componente `.vue`
-
-En cada archivo `.vue` podemos tener todo lo relacionado con el componente separado por los tags:
-- `<template>` → El HTML del componente con _habilidades_ extra proporcionadas por vue
-- `<script>` → El JS que gestiona el componente. Aqui podemos importar modulos npm y otros archivos del proyecto
-- `<style scoped>` → Los estilos que con `scoped` quedan restringidos al HTML de `template`
-
-**`src/components/Title.vue`**
+## 2.- Ojo a la la definición del módulo 
 
 ```
-<template>
-  <h1 class="Title">{{ text }}</h1>
-</template>
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { HttpClientModule }    from '@angular/common/http';
+import { FormsModule } from "@angular/forms"
 
-<script>
-export default {
-  props: {
-    text: String
-  }
-};
-</script>
+import { AppComponent } from './app.component';
+import { SearchComponent } from './search/search.component';
+import { ListResultsComponent } from './list-results/list-results.component';
+import { ListItemComponent } from './list-item/list-item.component';
 
-<style scoped>
-.Title {
-  color: blue;
-}
-</style>
-
+@NgModule({
+  declarations: [
+    AppComponent,
+    SearchComponent,
+    ListResultsComponent,
+    ListItemComponent
+  ],
+  imports: [
+    HttpClientModule,
+    BrowserModule,
+    FormsModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
 ```
 
+Todos los componentes que queramos utilizar tienen que formar parte de un módulo así que hay que asegurarse que nuestros componentes esten el `declarations` de algún módulo
 
+```
+@NgModule({
+  declarations: [
+    AppComponent,
+    SearchComponent,
+    ListResultsComponent,
+    ListItemComponent
+  ],
+  ...
+})
+```
+
+El módulo principal (normalmente `app.module.ts`) será el que se encargue de cargar la aplicación (normalmente a partir de un componente `app.component.ts` que se cargará en un `<app-root>` del `index.html`)
+
+```
+@NgModule({
+  ...
+  bootstrap: [AppComponent]
+})
+```
+
+Este módulo tiene que cargar los modulos de core que necesiten sus componentes:
+
+```
+@NgModule({
+  ...
+  imports: [
+    HttpClientModule,
+    BrowserModule,
+    FormsModule
+  ],
+  ...
+})
+```
+
+- `HttpClientModule` → necesario si algun componente utiliza algun servicio que requiera de este modulo (por inyección),
+- `BrowserModule` → Este sólo lo necesitará el modulo principal (App)
+- `FormsModule` → Carga directivas relacionadas con forms. La más importante → [`[(ngModel)]`](https://angular.io/api/forms/NgModel)
+
+Más info sobre esto [aqui](https://medium.com/@michelestieven/organizing-angular-applications-f0510761d65a)
 
 ## 3.- Cómo pasar datos entre componentes
 
-Para pasar datos entre componentes utilizamos o directivas (al igual que se hace en angular) o atributos con los datos que espera el componente
+Para pasar datos a un componente hijo, tenemos que preparar al hijo para que reciba estos datos
 
-**`src/components/App.vue`**
-```javascript
-<template>
-  <div class=".App">
-    <Title text="Super App" />
-    <TextBox 
-      :name="name" 
-      @click="changeName($event)"
-    />
-    <span>Times Changed: {{ times }}</span>
-  </div>
-</template>
+```
+import { ... Input ... } from '@angular/core';
 
-<script>
-import { Title, TextBox } from "@/components";
+...
 
-export default {
-  data() {
-    return {
-      times: 0,
-      name: "JuanMa"
-    };
-  },
-  components: {
-    TextBox,
-    Title
-  },
-  methods: {
-    changeName: function(newName) {
-      this.times++;
-      this.name = newName;
-    }
+export class ListItemComponent implements OnInit {
+
+  @Input() data: any = {}
+  srcImage: string = ''
+  
+  ngOnInit() {
+    const { path, extension } = this.data.thumbnail
+    this.srcImage = `${path}.${extension}`
   }
-};
-</script>
 
-<style scoped>
-.App {
-}
-</style>
-
-```
-
-**`src/components/TextBox.vue`**
-```
-<template>
-  <div class=".Text">
-    <p>
-      <strong @click="handleClick" >{{ name }}</strong>
-      <small> (click to change)</small>
-    </p> 
-    <p>Num Characters: <em> {{ numCharacters() }}</em></p>
-  </div>
-</template>
-
-<script>
-import faker from "faker";
-
-export default {
-  props: {
-    name: String
-  },
-  methods: {
-    handleClick() {
-      this.$emit("click", faker.name.findName());
-    },
-    numCharacters() {
-      return this.name.length;
-    }
-  }
-};
-</script>
-
-<style scoped>
-.Text {
-}
-</style>
-```
-
-[![Edit Vue Template](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/nkj311k870)
-
-#### Para datos estáticos
-
-```
-<Title text="Super App" />
-```
-
-El componente `Title` tiene que definir `text` como una de sus `props`
-
-```
-export default {
-  props: {
-    name: String
-  }
-  ...
 }
 ```
 
-Con esto ya podremos utilizarlo en su `template`
-```
-<h1 class="Title">{{ text }}</h1>
-```
-
-#### Para datos dinamicos
-
-Podemos _"bindear"_ datos (variables) a componentes hijos, de manera que si el dato cambia en el padre, se actualiza en el hijo automaticamente (se renderiza el componente hijo de nuevo con el dato y todos los datos que éste, actualizados)
-
-Para ello utilizamos la directiva `v-bind:title` (abreviado `:title`) 
+Con esto ya podemos hacer desde el padre 
 
 ```
-<TextBox  v-bind:name="name" ... />
+<app-list-item [data]="result"></app-list-item>
 ```
 
-o
+El `[]` que encierra especifica que el binding es de una sola direccion : del padre al hijo (es decir si se actualiza el dato en el padre, se actualiza automaticamente en el hijo)
 
-```
-<TextBox  :name="name" ... />
-```
+Si no ponemos `[]` no se define binding, lo cual es útil para carga estática de datos (textos y demás)
+
+Más info de esto [aqui](https://toddmotto.com/passing-data-angular-2-components-input)
 
 ## 4.- Cómo pasar métodos entre componentes
 
-Si queremos que un componente hijo ejecute una función definida en el padre, lo que hacemos es pasar un evento customizado al hijo asociandolo con un metodo del padre, y desde el hijo emitir ese evento en un momento dado (lo que provocará la ejecución del método en el padre)
+Si queremos que un componente hijo ejecute una función definida en el padre, tenemos que preparar al hijo para que acepte un atributo tipo `@Output`
 
-
-**`src/components/App.vue`**
 ```javascript
-<template>
-  <TextBox 
-      ...
-      @name-click="changeName($event)"
-    />
-</template>
+import { ... Output, EventEmitter } from '@angular/core';
 
-<script>
-
-export default {
-  ...,
-  methods: {
-    changeName: function(newName) {
-      this.times++;
-      this.name = newName;
-    }
+... 
+export class SearchComponent {
+  query: string = ''
+  @Output() search = new EventEmitter();
+  
+  submitSearch(event) {
+    event.preventDefault()
+    this.search.emit(this.query);
   }
-};
-</script>
+
+}
 ```
 
-**`src/components/TextBox.vue`**
-```javascript
-<template>
-  ...
-    <strong @click="handleClick" >{{ name }}</strong>
-  ...
-</template>
+La idea es que que definimos un evento customizado (puede tener el nombre que queramos: `search`, `click`, `change`...)
 
-<script>
-
-export default {
-  ...,
-  methods: {
-    handleClick() {
-      this.$emit("name-click", faker.name.findName());
-    }
-  }
-};
-</script>
+```
+@Output() search = new EventEmitter();
 ```
 
-## 5.- Los mismos tipos de directivas que en angular
+y que desde el hijo, en un momento dado, lanzemos ese evento con la info correspondiente
 
-En vue, tenemos un montón de directivas muy parecidas a las disponibles en angular:
+```
+ this.search.emit(this.query);
+```
 
-- `v-if="showMessage"` → renderiza o no el tag en base a una condición
-- `v-bind:class="{ moreThan3: hobbies.length > 3 }"` → añade o no una clase en base a una condición
-- `v-bind:style="{ backgroundColor: getColor(element)}"` → añade o no estilos en linea en base a una condición 
-- `v-bind:id="'el' + element"` → argumentos nativos construidos en base a un valor dinámico del componente Vue
+Con esto, desde el padre podremos engancharle a este evento una función suya...
 
-Más detalles sobre directivas vue [aqui](https://styde.net/introduccion-a-las-directivas-de-vue-js-con-v-if-v-show-y-v-else/)
+```
+<app-search (search)="getHeroes($event)"></app-search>
+```
+
+Que recibirá los datos con los que emitimos el evento 
+
+`getHeroes($event)` recibe el dato mandado por `this.search.emit(this.query);` en este caso `this.query`, pero podrian ser más valores
+
+
+```
+...
+import { ApiMarvelService } from './api-marvel.service';
+
+export class AppComponent {
+  results = [];
+  constructor(
+    public apiMarvelService: ApiMarvelService
+  ) {}
+
+  getHeroes(query) {
+    this.apiMarvelService.searchHeroes(query)
+      .subscribe(({ data: { results } }) => this.results = results);
+  }
+}
+```
+
+Más info de esto [aqui](https://toddmotto.com/component-events-event-emitter-output-angular-2)
+
+## 5.- Servicios y Observables
+
+En angular las peticiones a las API se manejan con Observables, que nos permiten manejar mucho más que peticiones al servidor.
+Un observable es un objeto al que nos podemos subscribir con una función, de tal manera que cuando este Observable cambie, la función suscrita se ejecutará con los datos correspondientes
+
+```
+
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+import { Observable } from 'rxjs';
+
+import { PUBLIC_KEY } from '../config.js'
+const BASE_URL_API = "https://gateway.marvel.com/v1/public/"
+
+const getUrlApiSearch = query =>
+  `${BASE_URL_API}characters?nameStartsWith=${query}&apikey=${PUBLIC_KEY}`
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ApiMarvelService {
+
+  constructor(
+    public http: HttpClient
+  ) {}
+
+   searchHeroes (query='spider'): Observable<any> {
+    const url = getUrlApiSearch(query)
+    return this.http.get(url)
+  }
+
+}
+```
+
+Definimos con typescript que lo que va a devolver nuestro metodo es un observable
+
+```
+   searchHeroes (query='spider'): Observable<any> { ... }
+```
+
+que luego consumiremos asi
+
+```
+getHeroes(query) {
+    this.apiMarvelService.searchHeroes(query)
+      .subscribe(({ data: { results } }) => this.results = results);
+  }
+```
+
+Como podemos ver, nos suscribimos con una función al Obervable devuelto.
+Esta estructura es muy parecida al `.then` de las promesas, pero con Observables podemos hacer muchas mas cosas

@@ -1,7 +1,7 @@
 <div class="App">
   <div class="container">
     <h1>SuperHero Finder</h1>
-    <app-search (search)="getHeroes($event)"></app-search>
+    <app-search message="Look for your favorite superhero" (search)="getHeroes($event)"></app-search>
     <app-list-results [results]="results"></app-list-results>
   </div>
 </div>
