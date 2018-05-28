@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-list-item',
@@ -6,10 +6,11 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./list-item.component.css']
 })
 export class ListItemComponent implements OnInit {
-
-  constructor() { }
-
+  @Input() data: any = {}
+  srcImage: string = ''
   ngOnInit() {
+    const { path, extension } = this.data.thumbnail
+    this.srcImage = `${path}.${extension}`
   }
 
 }

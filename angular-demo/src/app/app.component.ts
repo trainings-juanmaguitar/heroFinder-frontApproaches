@@ -1,21 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ApiMarvelService } from './api-marvel.service';
 
 @Component({
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  templateUrl: './app.component.html'
 })
 export class AppComponent {
   results = [];
-  constructor(public apiMarvelService: ApiMarvelService) {
-  }
-  ngOnInit() {
+  constructor(
+    public apiMarvelService: ApiMarvelService
+  ) {}
 
-  }
   getHeroes(query) {
-    this.apiMarvelService.getHeroes(query)
-      .subscribe((results) => this.results = results);
+    this.apiMarvelService.searchHeroes(query)
+      .subscribe(({ data: { results } }) => this.results = results);
   }
 }
 

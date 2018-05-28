@@ -20,12 +20,9 @@ export class ApiMarvelService {
     public http: HttpClient
   ) {}
 
-   getHeroes (query='spider'): Observable<[]> {
+   searchHeroes (query='spider'): Observable<any> {
     const url = getUrlApiSearch(query)
     return this.http.get(url)
-      .pipe(
-        map(({ data: { results } }) => results)
-      )
   }
 
 }

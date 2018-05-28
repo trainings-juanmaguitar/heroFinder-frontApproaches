@@ -1,3 +1,13 @@
-<p>
-  list-item works!
-</p>
+<div class="ListItem">
+  <div class="card">
+    <img
+      class="card-img-top"
+      [src]="srcImage"
+      alt=""
+    />
+    <div class="card-body">
+      <h5 class="card-title">{{ data.name }}</h5>
+      <p class="card-text">{{ data.description }}</p>
+    </div>
+  </div>
+</div>
