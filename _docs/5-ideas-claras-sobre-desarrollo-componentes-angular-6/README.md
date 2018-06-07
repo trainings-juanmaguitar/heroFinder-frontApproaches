@@ -1,12 +1,5 @@
 # 5 ideas claras sobre desarrollo con componentes en Vue
 
-Vengo de desarrollar en varios frameworks (Angular.js, React y Vue) y estoy realizando mis primeras aplicaciones con Angular 6
-
-En mi experiencia como profesor (y como alumno) angular es el framework que he encontrado menos atractivo y más difícil de aprender, comparándolo con React y Vue
-
-De mis primeras aplicaciones con angular 6 saco estas 5 lecciones 
-
-
 ## 1.- [`angular-cli`](https://github.com/angular/angular-cli)
 
 Igual que con [`create-react-app`](https://github.com/facebook/create-react-app) o que con [`vue-cli`](https://github.com/vuejs/vue-cli/blob/dev/docs/README.md), con [`angular-cli`](https://github.com/angular/angular-cli) podemos crear rapidamente el entorno para trabajar en una app Angular

@@ -1,9 +1,5 @@
 # 5 ideas claras sobre desarrollo con componentes en Vue
 
-Vengo de desarrollar intensamente con React y Angular.js, (sobre todo React ultimamente) y ahora estoy aprendiendo Vue.js
-
-Hay algunas cosas que me han llamado especialmente la atención al desarrollar una app con Vue.js viniendo de estos frameworks, asi que las quería dejar escritas
-
 ## 1.- [`vue-cli`](https://github.com/vuejs/vue-cli/blob/dev/docs/README.md)
 
 Igual que con [`create-react-app`](https://github.com/facebook/create-react-app) podemos crear rapidamente el entorno para trabajar en un app React, con [`vue-cli`](https://github.com/vuejs/vue-cli/blob/dev/docs/README.md) podemos crear el entorno para crear aplicaciones Vue.
